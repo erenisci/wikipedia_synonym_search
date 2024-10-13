@@ -1,0 +1,6 @@
+bu dosya yerine de .env dosyası
+
+içinde sadece:
+
+DATABASE_URL="buraya url mongodb urlsi"
+DATABASE_PASSWORD="buraya şifre"

@@ -1,0 +1,36 @@
+# Python dosyaları
+__pycache__/
+*.py[cod]
+*.pyo
+
+trwiki-latest-pages-articles.xml
+
+# Ortam değişkenleri dosyaları
+.env
+
+# FastText model dosyaları
+models/*.bin
+
+# MongoDB veritabanı dosyaları
+*.mongodb
+*.db
+
+# IDE ayar dosyaları
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Geçici dosyalar
+*.log
+*.tmp
+
+# Python paket yöneticileri
+pip-log.txt
+pip-wheel-metadata/
+build/
+dist/
+*.egg-info/
+
+# Jupyter Notebook dosyaları
+.ipynb_checkpoints

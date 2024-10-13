@@ -1,0 +1,5 @@
+Buraya cc.tr.300.bin.txt dosyası /models/ içine
+
+https://fasttext.cc/docs/en/crawl-vectors.html
+
+burdan aşağı git bin dosyasını indir türkçe
