@@ -1,20 +1,13 @@
-import glob
+import os
+from db.mongo import connect_mongo, save_to_mongodb
 
-from src.parser import parse_xml_and_store_in_mongo
-
-
-def main():
-    xml_files = glob.glob(
-        "resources/*.xml"
-    )  # resources klasöründeki tüm XML dosyalarını al
-
-    for xml_file in xml_files:
-        try:
-            parse_xml_and_store_in_mongo(xml_file)
-            print(f"Successfully processed: '{xml_file}'")  # Başarı mesajı
-        except Exception as e:
-            print(f"Error processing file '{xml_file}': {e}")
-
-
+# Veriyi kaydetme işlemini başlat
 if __name__ == "__main__":
-    main()
+    client, db = connect_mongo()
+    xml_directory = "resources/"
+
+    # resources klasöründeki tüm XML dosyalarını sırayla işle
+    for file_name in os.listdir(xml_directory):
+        if file_name.endswith(".xml"):
+            file_path = os.path.join(xml_directory, file_name)
+            save_to_mongodb(db, file_path)

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *.pyo
 
+# XML Dosyaları
 trwiki-latest-pages-articles.xml
 
 # Ortam değişkenleri dosyaları
