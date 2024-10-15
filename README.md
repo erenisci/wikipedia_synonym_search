@@ -5,25 +5,26 @@ Wikipedia Synonym Search is a project aimed at finding synonyms in the Turkish l
 ## Project Structure
 
 The project is organized as follows:
-
+```plaintext
 wikipedia-nlp-project/
 ├── main.py
 ├── db/
-│ ├── mongo.py
-│ └── \_\_init\_\_.py
+│   ├── mongo.py
+│   └── __init__.py
 ├── elasticsearch/
-│ ├── elastic_index.py
-│ └── \_\_init\_\_.py
+│   ├── elastic_index.py
+│   └── __init__.py
 ├── resources/
-│ ├── wiki_dump_1.xml
-│ ├── wiki_dump_2.xml
-│ └── ...
+│   ├── wiki_dump_1.xml
+│   ├── wiki_dump_2.xml
+│   └── ...
 ├── utils/
-│ ├── xml_processor.py
-│ └── \_\_init\_\_.py
+│   ├── xml_processor.py
+│   └── __init__.py
 ├── requirements.txt
 ├── .env
 └── README.md
+```
 
 - main.py: The main file of the project. Loads data into MongoDB and starts the Elasticsearch indexing process.
 
