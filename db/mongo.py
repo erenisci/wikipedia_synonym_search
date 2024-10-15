@@ -1,9 +1,8 @@
 import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from dotenv import load_dotenv
 from utils.xml_processor import extract_articles_from_dump
-
 
 load_dotenv()
 
