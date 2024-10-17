@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
+
 # Bu dosyayı çalıştırırsan elastice yükler
 
 import os
 import pymongo
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch, NotFoundError
+import numpy as np
+from gensim.models import Word2Vec
 
 # Ortam değişkenlerini yükle
 load_dotenv()
@@ -52,11 +56,11 @@ def create_index():
                 "filter": {
                     "turkish_stop": {
                         "type": "stop",
-                        "stopwords": "_turkish_",  # Elasticsearch yerleşik Türkçe durdurma kelimeleri
+                        "stopwords": "_turkish_",  
                     },
                     "turkish_stemmer": {
                         "type": "stemmer",
-                        "language": "turkish",  # Elasticsearch yerleşik Türkçe kök bulma
+                        "language": "turkish",  
                     },
                 },
             }
@@ -65,20 +69,44 @@ def create_index():
             "properties": {
                 "title": {"type": "text", "analyzer": "turkish_analyzer"},
                 "text": {"type": "text", "analyzer": "turkish_analyzer"},
+                "vector_field": {  
+                    "type": "dense_vector",
+                    "dims": 100  
+                },
             }
         },
     }
     # Eğer indeks yoksa oluştur
     if not es.indices.exists(index="wikipedia"):
         es.indices.create(index="wikipedia", body=index_settings)
-        print("Elasticsearch indeks oluşturuldu.")
+        print("Elasticsearch indeksi oluşturuldu.")
     else:
         print("Elasticsearch indeksi zaten mevcut, oluşturma atlandı.")
 
 
+def load_word2vec_model():
+    return Word2Vec.load("word2vec.model")  
+
+
+def get_vector_from_article(text, model):
+    words = text.split() 
+    word_vectors = []
+
+    for word in words:
+        try:
+            vector = model.wv[word]  
+            word_vectors.append(vector)
+        except KeyError:
+            word_vectors.append(np.zeros(model.vector_size))
+
+    return np.mean(word_vectors, axis=0).tolist()
+
+
 # MongoDB'den makaleleri al ve Elasticsearch'e tek tek ekle
 def index_articles(batch_size=100):
+    model = load_word2vec_model()  # Word2Vec modelini yükle
     total_documents = collection.count_documents({})
+    
     for skip in range(0, total_documents, batch_size):
         cursor = collection.find().skip(skip).limit(batch_size)
 
@@ -86,11 +114,17 @@ def index_articles(batch_size=100):
             try:
                 # Elasticsearch'te belge mevcut mu kontrol et
                 if not es.exists(index="wikipedia", id=str(article["_id"])):
-                    # Eğer belge mevcut değilse, indekse ekle
+
+                    word_vector = get_vector_from_article(article["text"], model)
+
                     es.index(
                         index="wikipedia",
                         id=str(article["_id"]),
-                        body={"title": article["title"], "text": article["text"]},
+                        body={
+                            "title": article["title"],
+                            "text": article["text"],
+                            "vector_field": word_vector,  
+                        },
                     )
                     print(f"İndekslendi: Başlık - {article['title']} - Kaydedildi")
                 else:
@@ -99,7 +133,6 @@ def index_articles(batch_size=100):
                 print(f"Makale indekslenirken hata oluştu {article['title']}: {e}")
 
 
-# Elasticsearch indeks oluştur ve makaleleri indeksle
 if __name__ == "__main__":
     create_index()
     index_articles()

@@ -1,0 +1,11 @@
+wordnet_search.py: kullanıcıdan aldığımız kelimenin Türkçe eş anlamlılarını bulmak için WordNet kütüphanesini kullanıyor. 
+
+word2vec_search.py: Word2Vec modelini kullanarak verilen bir kelimenin en benzer 10 kelimesini buluyor ve bunları skoru ile birlikte listeliyor.
+
+word2vec_model.py: MongoDB'den alınan verileri kullanarak bir Word2Vec modelini eğitiyor 
+
+elastic_search.py: senin yaptığının üstüne index kodunda vektör alma ekledim ondan verilen kelimenin vektörünü alıyor ve Elasticsearch kullanarak bu vektöre benzer kelimeleri arıyor
+
+local_search.py: senin bu eş anlamlı bulduğun veri setini localden bakarak eş anlam bulmaya çalışıyor ama en kötü o çalışıyor onu boşver. diğerleri hemen hemen aynı sonuçları veriyor. Mesela beyaz yazıyorsun siyah, mavi kırmızı diye renkleri sıralıyor ama mesela komutan yazıyorsun daha alakalı kelimeler veriyor general, teğmen vs. gibi. 
+
+birde local_search kodunda threshold diye bir şey var. bazı kelimelerin eş anlamlıalrı yok. bu yüzden kelimelere beznerlik skorları veriyoruz benzerlik skorunun belirli bir eşikten büyük olması durumunda, bu kelime eş anlamlı olarak kabul ediyoruz. hocada kullanın demişti bunu.
