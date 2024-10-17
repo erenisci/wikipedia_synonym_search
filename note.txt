@@ -11,3 +11,5 @@ local_search.py: senin bu eş anlamlı bulduğun veri setini localden bakarak e�
 birde local_search kodunda threshold diye bir şey var. bazı kelimelerin eş anlamlıalrı yok. bu yüzden kelimelere beznerlik skorları veriyoruz benzerlik skorunun belirli bir eşikten büyük olması durumunda, bu kelime eş anlamlı olarak kabul ediyoruz. hocada kullanın demişti bunu.
 
 Ama en mantıklısı her şeyi elastic_search kodunda halledip vektörleri ile birlikte elastic_search'e yükleyip vektör araması yapmak. çünkü bazı kelimeleri yanlış vektörler ile yüklüyor demiştim hata veriyor diye. çünkü mesela komutan yazıyorsun mantıklı şeyler çıkıyor beyaz yazıyorsun mantıksız kelimeler çıkıyor.
+
+farklı modelleride denedim hemen hemen hepsi aynı mantıkta çalışıyor. bi en kötü local_search tü işte. o yüzden vektör olarak düzgün bir şekilde elastice yüklersek gerisi kolay gibi. çünkü vektörü düzgün aldığı kelimelerde modeller mantıklı kelimeler veriyor.
