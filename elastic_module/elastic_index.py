@@ -1,9 +1,8 @@
-# Bu dosyayı çalıştırırsan elastice yükler
-
 import os
 import pymongo
 from dotenv import load_dotenv
-from elasticsearch import Elasticsearch, NotFoundError
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 
 # Ortam değişkenlerini yükle
 load_dotenv()
@@ -76,27 +75,26 @@ def create_index():
         print("Elasticsearch indeksi zaten mevcut, oluşturma atlandı.")
 
 
-# MongoDB'den makaleleri al ve Elasticsearch'e tek tek ekle
+# MongoDB'den makaleleri al ve Elasticsearch'e toplu ekle
 def index_articles(batch_size=100):
     total_documents = collection.count_documents({})
     for skip in range(0, total_documents, batch_size):
         cursor = collection.find().skip(skip).limit(batch_size)
+        actions = []
 
         for article in cursor:
-            try:
-                # Elasticsearch'te belge mevcut mu kontrol et
-                if not es.exists(index="wikipedia", id=str(article["_id"])):
-                    # Eğer belge mevcut değilse, indekse ekle
-                    es.index(
-                        index="wikipedia",
-                        id=str(article["_id"]),
-                        body={"title": article["title"], "text": article["text"]},
-                    )
-                    print(f"İndekslendi: Başlık - {article['title']} - Kaydedildi")
-                else:
-                    print(f"Zaten mevcut: Başlık - {article['title']} - Geçiliyor")
-            except Exception as e:
-                print(f"Makale indekslenirken hata oluştu {article['title']}: {e}")
+            action = {
+                "_op_type": "index",
+                "_index": "wikipedia",
+                "_id": str(article["_id"]),
+                "_source": {"title": article["title"], "text": article["text"]},
+            }
+            actions.append(action)
+
+        # Bulk işlemine ekleme
+        if actions:
+            bulk(es, actions)
+            print(f"İndekslendi: {len(actions)} belge - Kaydedildi")
 
 
 # Elasticsearch indeks oluştur ve makaleleri indeksle
