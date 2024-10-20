@@ -1,4 +1,4 @@
-# Elastice yükledikten sonra bu dosyayla search denemesi yapabilirsin main.py'da
+# -*- coding: utf-8 -*-
 
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
