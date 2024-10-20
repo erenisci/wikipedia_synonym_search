@@ -8,29 +8,112 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #f8f9fa;
+      background-color: #e9ecef;
       color: #343a40;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .container {
-      margin-top: 50px;
+      margin-top: 22px;
       max-width: 600px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      background-color: white;
+      transition: transform 0.2s;
+    }
+
+    .container:hover {
+      transform: scale(1.02);
+    }
+
+    h1 {
+      font-weight: bold;
+      color: #007bff;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .input-group input {
+      border-radius: 30px 0 0 30px;
+      border: 1px solid #007bff;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn-primary {
+      border-radius: 0 30px 30px 0;
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      box-shadow: 0 0 10px rgba(0, 86, 179, 0.5);
+    }
+
+    .result-box {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      max-height: 480px;
+      overflow-y: auto;
+      margin-top: 20px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .result-box:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-box::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .result-box::-webkit-scrollbar-thumb {
+      background-color: #007bff;
+      border-radius: 10px;
+    }
+
+    .result-box::-webkit-scrollbar-thumb:hover {
+      background-color: #0056b3;
     }
 
     .result-item {
-      background: #ffffff;
+      padding: 15px 10px;
+      border-bottom: 1px solid #eaeaea;
+      transition: background 0.3s;
       border-radius: 5px;
-      padding: 15px;
       margin-bottom: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #f8f9fa;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
     }
 
     .result-item:hover {
-      background: #f1f1f1;
+      background: #e9ecef;
+      transform: scale(1.02);
     }
 
     .keyword {
       font-weight: bold;
+      margin-top: 20px;
+      color: #555;
+    }
+
+    .alert {
+      margin-top: 20px;
+      background-color: #f7f7d6;
+      border-color: #ffeeba;
     }
   </style>
 </head>
@@ -48,14 +131,15 @@
     {% if results %}
     <h3 class="keyword">Aradığınız kelime: <span>{{ request.form['query'] }}</span></h3>
     <h2 class="h4">Sonuçlar:</h2>
-
-    <div class="result-list">
-      {% for title, score in results %}
-      <div class="result-item">
-        <h5>{{ title }}</h5>
-        <p>Skor: {{ score }}</p>
+    <div class="result-box">
+      <div class="result-list">
+        {% for title, score in results %}
+        <div class="result-item">
+          <h5>{{ title }}</h5>
+          <p>Skor: {{ score }}</p>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
     {% else %}
     <div class="alert alert-info" role="alert">
