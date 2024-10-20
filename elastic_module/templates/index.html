@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic Search</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      color: #343a40;
+    }
+
+    .container {
+      margin-top: 50px;
+      max-width: 600px;
+    }
+
+    .result-item {
+      background: #ffffff;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-item:hover {
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="text-center">Semantic Search</h1>
+    <form method="POST" class="mb-4">
+      <div class="input-group">
+        <input type="text" name="query" class="form-control" placeholder="Aramak istediğiniz kelimeyi girin" required>
+        <button type="submit" class="btn btn-primary">Ara</button>
+      </div>
+    </form>
+
+    {% if results %}
+    <h2 class="h4">Sonuçlar:</h2>
+    <div class="result-list">
+      {% for title, score in results %}
+      <div class="result-item">
+        <h5>{{ title }}</h5>
+        <p>Skor: {{ score }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+      Henüz bir arama yapmadınız.
+    </div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
