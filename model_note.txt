@@ -1,0 +1,4 @@
+1. İlk önce processor.py ile trwiki-latest-pages-articles.xml'i temizleyip txt haline getiriyorsun.
+2. word2vec_train.py ile .txt formatındaki dosyayı kullanarak word2vec eğitiyorsun.
+3. w2v_load_model.py ile eğitmiş olduğun model üzerinden en yakın kelimeleri inceleyebilirsin. 
+   veya elastic_search.py kodu ilede bakabilirsin.
