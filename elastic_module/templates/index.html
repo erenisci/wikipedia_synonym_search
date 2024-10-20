@@ -28,6 +28,10 @@
     .result-item:hover {
       background: #f1f1f1;
     }
+
+    .keyword {
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -42,7 +46,9 @@
     </form>
 
     {% if results %}
+    <h3 class="keyword">Aradığınız kelime: <span>{{ request.form['query'] }}</span></h3>
     <h2 class="h4">Sonuçlar:</h2>
+
     <div class="result-list">
       {% for title, score in results %}
       <div class="result-item">
