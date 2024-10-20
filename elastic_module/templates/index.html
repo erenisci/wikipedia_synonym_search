@@ -6,22 +6,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Semantic Search</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #e9ecef;
+      background-color: #f0f2f5;
       color: #343a40;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Roboto', sans-serif;
     }
 
     .container {
-      margin-top: 22px;
+      margin-top: 50px;
       max-width: 600px;
-      padding: 20px;
+      padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-      background-color: white;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
       transition: transform 0.2s;
     }
+
+    .result-box {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      max-height: 400px;
+      overflow-y: scroll;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+
+    .result-box::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .result-box::-webkit-scrollbar-thumb {
+      background: #007bff;
+      border-radius: 10px;
+    }
+
+    .result-box::-webkit-scrollbar-track {
+      background: #f0f2f5;
+    }
+
 
     .container:hover {
       transform: scale(1.02);
@@ -30,42 +56,52 @@
     h1 {
       font-weight: bold;
       color: #007bff;
-      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
       text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
     }
 
     .input-group input {
       border-radius: 30px 0 0 30px;
       border: 1px solid #007bff;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
     }
 
     .input-group input:focus {
       border-color: #0056b3;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
     }
 
     .btn-primary {
       border-radius: 0 30px 30px 0;
       background-color: #007bff;
       border: none;
+      padding: 15px 25px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
     .btn-primary:hover {
       background-color: #0056b3;
-      box-shadow: 0 0 10px rgba(0, 86, 179, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 86, 179, 0.5);
     }
 
     .result-box {
       background: #ffffff;
       border-radius: 10px;
-      padding: 15px;
+      padding: 20px;
       box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-      max-height: 480px;
+      max-height: 400px;
       overflow-y: auto;
       margin-top: 20px;
-      position: relative;
       transition: all 0.3s;
     }
 
@@ -73,26 +109,15 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .result-box::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .result-box::-webkit-scrollbar-thumb {
-      background-color: #007bff;
-      border-radius: 10px;
-    }
-
-    .result-box::-webkit-scrollbar-thumb:hover {
-      background-color: #0056b3;
-    }
-
     .result-item {
-      padding: 15px 10px;
+      padding: 15px;
       border-bottom: 1px solid #eaeaea;
       transition: background 0.3s;
       border-radius: 5px;
       margin-bottom: 10px;
       background-color: #f8f9fa;
+      position: relative;
+      overflow: hidden;
     }
 
     .result-item:last-child {
@@ -112,8 +137,15 @@
 
     .alert {
       margin-top: 20px;
-      background-color: #f7f7d6;
-      border-color: #ffeeba;
+      background-color: #e9f7fd;
+      border-color: #b2ebf2;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #6c757d;
+      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -147,6 +179,10 @@
     </div>
     {% endif %}
   </div>
+
+  <footer class="footer">
+    <p>© 2024 Semantic Search. Tüm Hakları Saklıdır.</p>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
