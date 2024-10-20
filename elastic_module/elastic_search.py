@@ -67,10 +67,28 @@ def search_articles_with_synonyms(query):
                 }
             }
         )
-        return [(hit['_source']['title'], hit['_score']) for hit in response["hits"]["hits"]]
+        results = []
+        for hit in response["hits"]["hits"]:
+            full_text = hit['_source']['text']
+            count = full_text.lower().count(query.lower())  # Kelimenin kaç kez geçtiğini bul
+            results.append({
+                'title': hit['_source']['title'],
+                'url': hit['_source']['url'],
+                'snippet': ' '.join(full_text.split()[:20]),
+                'full_text': full_text,
+                'count': count  # Eklenen sayım
+            })
+        
+        return results, synonyms  # Hem sonuçları hem de eş anlamlıları döndürüyoruz
     except Exception as e:
         print(f"Arama işlemi sırasında hata oluştu: {e}")
-        return []
+        return [], []  # Hata durumunda boş listeler döndür
+
+
+
+
+
+
 
 if __name__ == "__main__":
     data = fetch_data_from_elastic('wikipedia')
