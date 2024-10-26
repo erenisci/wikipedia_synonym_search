@@ -4,7 +4,6 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from utils.xml_processor import extract_articles_from_dump
 
-
 load_dotenv()
 
 
@@ -28,11 +27,8 @@ def save_to_mongodb(db, file_path):
     collection.create_index("title", unique=True)
 
     for article in extract_articles_from_dump(file_path):
-        if collection.find_one({"title": article["title"]}):
+        try:
+            collection.insert_one(article)
+            print(f"Makale kaydedildi: {article['title']}")
+        except DuplicateKeyError:
             print(f"Makale zaten var, atlanıyor: {article['title']}")
-        else:
-            try:
-                collection.insert_one(article)
-                print(f"Makale kaydedildi: {article['title']}")
-            except DuplicateKeyError:
-                print(f"Makale zaten var, atlanıyor: {article['title']}")

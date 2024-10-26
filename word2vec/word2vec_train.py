@@ -22,7 +22,7 @@ def fetch_and_clean_data():
     corpus_cleaned = []
 
     # Veritabanındaki her makaleyi al
-    for document in collection.find({}, {"text": 1}):  # Sadece 'text' alanını çekiyoruz
+    for document in collection.find({}, {"text": 1}):
         text = document.get("text", "")
 
         # Noktalama işaretlerini temizle ve küçük harfe çevir
@@ -42,12 +42,12 @@ if __name__ == "__main__":
 
     # Word2Vec modelini sıfırdan başlat ve eğit
     word_model = Word2Vec(
-        sentences=cleaned_data,  # Eğitim verisi olarak temizlenmiş ve token edilmiş cümleler
-        vector_size=100,  # Her bir kelimenin vektör boyutu
-        min_count=7,  # En az 7 kere geçen kelimeleri öğren
-        window=5,  # Yakın kelimelerin etkileşim penceresi
-        epochs=10,  # Eğitim döngüsü sayısı
-        workers=12,  # Çok çekirdekli işlemci kullanımı için işçi sayısı
+        sentences=cleaned_data,
+        vector_size=100,
+        min_count=7,
+        window=5,
+        epochs=10,
+        workers=12,
     )
 
     # Eğitilen modeli kaydet

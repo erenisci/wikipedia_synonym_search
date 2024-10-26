@@ -21,22 +21,12 @@ ELASTIC_CLOUD_ID = os.getenv("ELASTIC_CLOUD_ID")
 ELASTIC_USERNAME = os.getenv("ELASTIC_USERNAME")
 ELASTIC_PASSWORD = os.getenv("ELASTIC_PASSWORD")
 
-if not ELASTIC_CLOUD_ID or not ELASTIC_USERNAME or not ELASTIC_PASSWORD:
-    raise ValueError("Elasticsearch bağlantı bilgileri ortam değişkenlerinde eksik.")
-
-try:
-    es = Elasticsearch(
-        cloud_id=ELASTIC_CLOUD_ID, basic_auth=(ELASTIC_USERNAME, ELASTIC_PASSWORD)
-    )
-    if es.ping():
-        print("Elasticsearch Bulut'a başarıyla bağlanıldı!")
-    else:
-        raise ConnectionError("Elasticsearch Bulut'a bağlanılamadı.")
-except Exception as e:
-    raise ConnectionError(f"Elasticsearch Bulut'a bağlanırken hata oluştu: {e}")
+es = Elasticsearch(
+    cloud_id=ELASTIC_CLOUD_ID, basic_auth=(ELASTIC_USERNAME, ELASTIC_PASSWORD)
+)
 
 # Word2Vec modelini yükle
-word_model = Word2Vec.load("w2v_custom.model")
+word_model = Word2Vec.load("w2v_custom_from_db.model")
 
 
 # Elasticsearch indeks ayarları
@@ -70,7 +60,7 @@ def create_index():
                 "url": {"type": "keyword"},
                 "word_vector": {
                     "type": "dense_vector",
-                    "dims": 100,  # Word2Vec modelinizin vektör boyutuyla eşleşmelidir.
+                    "dims": 100,
                 },
             }
         },
@@ -96,9 +86,7 @@ def index_articles(batch_size=100):
             if vectors:
                 avg_vector = sum(vectors) / len(vectors)
             else:
-                avg_vector = [
-                    0.0
-                ] * 100  # Eğer uygun vektör bulunamazsa sıfır dolu bir vektör döndür
+                avg_vector = [0.0] * 100
 
             action = {
                 "_op_type": "index",
