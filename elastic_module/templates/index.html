@@ -23,104 +23,140 @@
         transition: transform 0.2s;
       }
 
-      .container:hover {
-        transform: scale(1.02);
-      }
+    .container {
+      margin-top: 50px;
+      max-width: 900px;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      transition: transform 0.2s;
+    }
 
       .input-group {
         margin-bottom: 20px;
       }
 
-      .input-group input {
-        border-radius: 30px 0 0 30px;
-        border: 1px solid #007bff;
-        transition: border-color 0.3s, box-shadow 0.3s;
-        padding: 15px;
-        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+    .result-item {
+      padding: 15px;
+      border-bottom: 1px solid #eaeaea;
+      transition: background 0.3s;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: #f8f9fa;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-item:hover {
+      background: #e9ecef;
+      transform: scale(1.02);
+    }
+
+    .result-item a {
+      color: #007bff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .result-item a:hover {
+      color: #003366;
+      /* Koyu lacivert */
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .synonym-box {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      max-height: 150px;
+      /* Yüksekliği ayarlayabilirsiniz */
+      overflow-y: scroll;
+      /* Kaydırma çubuğu */
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+
+    .synonym-item {
+      padding: 10px;
+      border-bottom: 1px solid #eaeaea;
+      transition: background 0.3s;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      background-color: #f8f9fa;
+      color: blue;
+      /* Benzer kelimelerin rengi mavi */
+    }
+
+    .synonym-item:hover {
+      background: #e9ecef;
+    }
+
+    .synonym-title {
+      margin-top: 30px;
+      /* Boşluk bırakmak için */
+    }
+  </style>
+</head>
+
+<script>
+  document.querySelectorAll('.check-more').forEach(button => {
+    button.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      const url = button.getAttribute('data-url');
+      const additionalContentDiv = button.nextElementSibling;
+
+      // Eğer içerik zaten yüklendiyse, tekrar yüklemeyelim
+      if (additionalContentDiv.innerHTML !== '') {
+        additionalContentDiv.style.display = 'block';
+        return;
       }
 
-      .input-group input:focus {
-        border-color: #0056b3;
-        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+      try {
+        const response = await fetch(`${url}/fulltext`); // Burada tam metni dönen bir endpoint olduğunu varsayıyoruz
+        const fullText = await response.text();
+        additionalContentDiv.innerHTML = fullText; // Gelen veriyi ekliyoruz
+        additionalContentDiv.style.display = 'block';
+      } catch (error) {
+        console.error('Hata:', error);
+        additionalContentDiv.innerHTML = 'Ek içerik yüklenirken hata oluştu.';
+        additionalContentDiv.style.display = 'block';
       }
+    });
+  });
+</script>
 
-      .btn-primary {
-        border-radius: 0 30px 30px 0;
-        background-color: #007bff;
-        border: none;
-        padding: 15px 25px;
-        font-weight: bold;
-        transition: background-color 0.3s, transform 0.2s;
-      }
+<body>
+  <div class="container">
+    <h1 class="text-center">Semantic Search</h1>
+    <form method="POST" class="mb-4">
+      <div class="input-group">
+        <input type="text" name="query" class="form-control" placeholder="Aramak istediğiniz kelimeyi girin" required>
+        <button type="submit" class="btn btn-primary">Ara</button>
+      </div>
+    </form>
 
-      .btn-primary:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0, 86, 179, 0.5);
-      }
-
-      .result-box {
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-        max-height: 500px;
-        overflow-y: auto;
-        margin-top: 20px;
-        transition: all 0.3s;
-      }
-
-      .result-box:hover {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      }
-
-      .result-item {
-        padding: 15px;
-        height: 150px;
-        border-bottom: 1px solid #eaeaea;
-        transition: background 0.3s;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        background-color: #f8f9fa;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .result-item:hover {
-        background: #e9ecef;
-        transform: scale(1.02);
-      }
-
-      .footer {
-        text-align: center;
-        margin-top: 40px;
-        color: #6c757d;
-        font-size: 0.9rem;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <h1 class="text-center">Semantic Search</h1>
-      <form method="POST" class="mb-4">
-        <div class="input-group">
-          <input type="text" name="query" class="form-control" placeholder="Aramak istediğiniz kelimeyi girin" required>
-          <button type="submit" class="btn btn-primary">Ara</button>
-        </div>
-      </form>
-
-      {% if results %}
-      <h3 class="keyword">Aradığınız kelime: <span>{{ query }}</span></h3>
-      <h2 class="h4">Sonuçlar:</h2>
-      <div class="result-box">
-        <div class="result-list">
-          {% for result in results %}
-          <div class="result-item">
-            <h5><a href="{{ result.url }}" target="_blank">{{ result.title }}</a></h5>
-            <p>{{ result.text[:200] }}...</p>
-          </div>
-          {% endfor %}
+    {% if results %}
+    <h3 class="keyword">Aradığınız kelime: <span>{{ request.form['query'] }}</span></h3>
+    <h2 class="h4">Sonuçlar:</h2>
+    <div class="result-box">
+      <div class="result-list">
+        {% for result in results %}
+        <div class="result-item">
+          <h5><a href="{{ result.url }}" target="_blank">{{ result.title }}</a></h5>
+          <p>Anlam: {{ result.snippet }}</p>
+          <p>Kelime Sayısı: <strong>{{ result.count }}</strong></p> <!-- Kelime sayısı eklendi -->
+          <a href="#" class="check-more" data-url="{{ result.url }}" data-original-text="{{ result.snippet }}">Check
+            more</a>
+          <div class="additional-content" style="display: none;"></div>
         </div>
       </div>
       {% else %}
@@ -129,6 +165,24 @@
       </div>
       {% endif %}
     </div>
+
+    <h2 class="h4 synonym-title">Benzer Kelimeler:</h2>
+    <div class="synonym-box">
+      <div class="result-list">
+        {% for synonym in synonyms %}
+        <div class="synonym-item">
+          {{ synonym }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% else %}
+    <div class="alert alert-info" role="alert">
+      Henüz bir arama yapmadınız.
+    </div>
+    {% endif %}
+  </div>
 
     <footer class="footer">
       <p>© 2024 Semantic Search. Tüm Hakları Saklıdır.</p>

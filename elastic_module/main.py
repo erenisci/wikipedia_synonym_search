@@ -1,18 +1,21 @@
-from flask import Flask, request, render_template
-from elastic_search import search_articles
+# -*- coding: utf-8 -*-
 
+from flask import Flask, render_template, request
+from elastic_search import search_articles_with_synonyms  
 
 app = Flask(__name__)
 
-
-@app.route("/", methods=["GET", "POST"])
-def index():
+@app.route('/', methods=['GET', 'POST'])
+def home():
     results = []
-    query = ""
-    if request.method == "POST":
-        query = request.form["query"]
-        results = search_articles(query)
-    return render_template("index.html", results=results, query=query)
+    synonyms = []  # Eş anlamlılar için bir liste oluştur
+    query = ""  # query değişkenini burada başlatıyoruz
+
+    if request.method == 'POST':
+        query = request.form['query']
+        results, synonyms = search_articles_with_synonyms(query)  # İki değeri unpack ediyoruz
+
+    return render_template('index.html', results=results, synonyms=synonyms, query=query)
 
 
 if __name__ == "__main__":
