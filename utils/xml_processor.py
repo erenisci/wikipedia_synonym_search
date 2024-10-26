@@ -2,7 +2,6 @@ import re
 import xml.etree.ElementTree as ET
 
 
-# XML dosyasını aç ve verileri işleyip temizle
 def extract_articles_from_dump(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         context = ET.iterparse(file, events=("end",))
@@ -38,15 +37,12 @@ def extract_articles_from_dump(file_path):
                             "url": url,
                             "timestamp": (
                                 timestamp.text if timestamp is not None else None
-                            ),  # Son düzenlenme zamanı
+                            ),
                         }
                         print(f"İşleniyor: Başlık - {title_text}, URL - {url}")
                         yield article
 
                 elem.clear()
-
-
-import re
 
 
 def clean_wiki_text(text):

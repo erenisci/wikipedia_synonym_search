@@ -1,6 +1,8 @@
 pymongo>=3.11.0
 elasticsearch>=7.10.0
 python-dotenv>=0.15.0
-Flask==2.1.1
 gensim==4.1.2
 numpy==1.21.4
+nltk>=3.5
+tabulate
+Flask>=2.0.0

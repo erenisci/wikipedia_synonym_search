@@ -1,1 +1,1 @@
-from .xml_processor import extract_articles_from_dump, clean_wiki_text
+from .xml_processor import clean_wiki_text, extract_articles_from_dump

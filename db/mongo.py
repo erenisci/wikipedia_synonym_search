@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from utils.xml_processor import extract_articles_from_dump
 
+
 load_dotenv()
 
 
@@ -24,12 +25,9 @@ def connect_mongo():
 # Verileri MongoDB'ye kaydet
 def save_to_mongodb(db, file_path):
     collection = db["wikipedia_tr"]
-
-    # Title alanını benzersiz kılmak için bir indeks ekleyelim
     collection.create_index("title", unique=True)
 
     for article in extract_articles_from_dump(file_path):
-        # MongoDB'de aynı başlığa sahip veri var mı kontrol et
         if collection.find_one({"title": article["title"]}):
             print(f"Makale zaten var, atlanıyor: {article['title']}")
         else:

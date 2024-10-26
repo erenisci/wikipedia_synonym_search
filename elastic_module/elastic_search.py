@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
 import os
@@ -14,21 +12,30 @@ es = Elasticsearch(
     cloud_id=ELASTIC_CLOUD_ID, basic_auth=(ELASTIC_USERNAME, ELASTIC_PASSWORD)
 )
 
+
 def search_articles(query):
     try:
         response = es.search(
-            index="wikipedia", 
+            index="wikipedia",
             body={
                 "query": {
                     "multi_match": {
                         "query": query,
-                        "fields": ["text", "synonyms"],  
-                        "type": "best_fields"  
+                        "fields": ["title", "text"],
+                        "type": "best_fields",
                     }
                 }
-            }
+            },
         )
-        return [(hit['_source']['title'], hit['_score']) for hit in response["hits"]["hits"]]
+
+        return [
+            {
+                "title": hit["_source"]["title"],
+                "url": hit["_source"].get("url", "#"),
+                "text": hit["_source"]["text"],
+            }
+            for hit in response["hits"]["hits"]
+        ]
     except Exception as e:
-        print(f"Arama işlemi sırasında hata oluştu: {e}")
+        print(f"Error during search: {e}")
         return []
