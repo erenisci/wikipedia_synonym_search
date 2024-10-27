@@ -83,6 +83,7 @@ def create_index():
 
 
 # MongoDB'den makaleleri al ve Elasticsearch'e toplu ekle
+# MongoDB'den makaleleri al ve Elasticsearch'e toplu ekle
 def index_articles(batch_size=100):
     total_documents = collection.count_documents({})
     for skip in range(0, total_documents, batch_size):
@@ -90,12 +91,15 @@ def index_articles(batch_size=100):
         actions = []
 
         for article in cursor:
+            # Word2Vec modelinden vektör oluştur
             tokens = article["text"].split()
             vectors = [word_model.wv[word] for word in tokens if word in word_model.wv]
             if vectors:
                 avg_vector = sum(vectors) / len(vectors)
             else:
-                avg_vector = [0.0] * 100  # Varsayılan sıfır vektör
+                # Sıfır vektör oluşmuşsa bu belgeyi atla
+                print(f"Sıfır vektör tespit edildi, atlanıyor: {article['title']}")
+                continue
 
             action = {
                 "_op_type": "index",
@@ -105,7 +109,7 @@ def index_articles(batch_size=100):
                     "title": article["title"],
                     "text": article["text"],
                     "url": article.get("url", ""),
-                    "word_vector": avg_vector,
+                    "word_vector": avg_vector.tolist(),  # Vektörü numpy dizisinden listeye çeviriyoruz
                 },
             }
             actions.append(action)
