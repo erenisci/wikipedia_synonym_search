@@ -19,7 +19,7 @@ def search():
 
 @app.route("/word2vec", methods=["GET"])
 def word2vec():
-    query = request.args.get("query", "")
+    query = request.args.get("query", "").lower() 
     synonyms = []
 
     if query:
@@ -30,6 +30,7 @@ def word2vec():
             synonyms = []
 
     return jsonify(synonyms)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
