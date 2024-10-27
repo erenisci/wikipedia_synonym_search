@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
 import os
@@ -11,7 +13,6 @@ ELASTIC_PASSWORD = os.getenv("ELASTIC_PASSWORD")
 es = Elasticsearch(
     cloud_id=ELASTIC_CLOUD_ID, basic_auth=(ELASTIC_USERNAME, ELASTIC_PASSWORD)
 )
-
 
 def search_articles(query):
     try:
@@ -32,7 +33,7 @@ def search_articles(query):
             {
                 "title": hit["_source"]["title"],
                 "url": hit["_source"].get("url", "#"),
-                "text": hit["_source"]["text"],
+                "text": hit["_source"]["text"][:200] + "...", 
             }
             for hit in response["hits"]["hits"]
         ]

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import pymongo
 from dotenv import load_dotenv
@@ -36,7 +38,7 @@ except Exception as e:
     raise ConnectionError(f"Elasticsearch Bulut'a bağlanırken hata oluştu: {e}")
 
 # Word2Vec modelini yükle
-word_model = Word2Vec.load("w2v_custom.model")
+word_model = Word2Vec.load("w2v_custom_from_db.model")
 
 
 # Elasticsearch indeks ayarları
@@ -82,7 +84,6 @@ def create_index():
         print("Elasticsearch indeksi zaten mevcut, oluşturma atlandı.")
 
 
-# MongoDB'den makaleleri al ve Elasticsearch'e toplu ekle
 # MongoDB'den makaleleri al ve Elasticsearch'e toplu ekle
 def index_articles(batch_size=100):
     total_documents = collection.count_documents({})
