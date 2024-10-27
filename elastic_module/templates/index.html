@@ -33,7 +33,6 @@
       border: none;
       border-radius: 10px;
       width: 100%;
-      /* Arama çubuğu genişliği %100 olarak ayarlandı */
     }
 
     .form-control::placeholder {
@@ -61,18 +60,15 @@
       display: flex;
       justify-content: space-between;
       margin-top: 20px;
-      /* Üstten biraz boşluk bırakıldı */
     }
 
     .result-box {
       flex: 1;
-      /* Kutular eşit genişlikte olacak şekilde ayarlandı */
       background-color: #2c2c2c;
       color: #f1f1f1;
       border-radius: 10px;
       padding: 15px;
       margin: 0 10px;
-      /* Sağ ve sol kenarlara boşluk eklendi */
       box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.3);
       max-height: 400px;
       overflow-y: auto;
@@ -149,14 +145,13 @@
             } else {
               resultTextElastic.innerHTML = 'Sonuç bulunamadı.';
             }
-            resultBoxElastic.style.display = 'block'; // Elasticsearch sonuç kutusunu göster
+            resultBoxElastic.style.display = 'block';
           })
           .catch(error => {
             console.error('Hata:', error);
             alert('Arama sırasında bir hata oluştu.');
           });
 
-        // Word2Vec eş anlamlıları arama işlemi
         fetch(`/word2vec?query=${encodeURIComponent(searchInput)}`)
           .then(response => {
             if (!response.ok) {
@@ -172,7 +167,7 @@
             } else {
               resultTextWord2Vec.innerHTML = 'Eş anlamlı kelime bulunamadı.';
             }
-            resultBoxWord2Vec.style.display = 'block'; // Word2Vec sonuç kutusunu göster
+            resultBoxWord2Vec.style.display = 'block';
           })
           .catch(error => {
             console.error('Hata:', error);

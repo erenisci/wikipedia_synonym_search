@@ -25,7 +25,8 @@ def search_articles(query):
                         "fields": ["title", "text"],
                         "type": "best_fields",
                     }
-                }
+                },
+                "size": 5
             },
         )
 
