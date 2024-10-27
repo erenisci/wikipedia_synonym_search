@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from gensim.models import Word2Vec
+import numpy as np  # NumPy modülünü ekledik
 
 # Ortam değişkenlerini yükle
 load_dotenv()
@@ -21,12 +22,22 @@ ELASTIC_CLOUD_ID = os.getenv("ELASTIC_CLOUD_ID")
 ELASTIC_USERNAME = os.getenv("ELASTIC_USERNAME")
 ELASTIC_PASSWORD = os.getenv("ELASTIC_PASSWORD")
 
-es = Elasticsearch(
-    cloud_id=ELASTIC_CLOUD_ID, basic_auth=(ELASTIC_USERNAME, ELASTIC_PASSWORD)
-)
+if not ELASTIC_CLOUD_ID or not ELASTIC_USERNAME or not ELASTIC_PASSWORD:
+    raise ValueError("Elasticsearch bağlantı bilgileri ortam değişkenlerinde eksik.")
+
+try:
+    es = Elasticsearch(
+        cloud_id=ELASTIC_CLOUD_ID, basic_auth=(ELASTIC_USERNAME, ELASTIC_PASSWORD)
+    )
+    if es.ping():
+        print("Elasticsearch Bulut'a başarıyla bağlanıldı!")
+    else:
+        raise ConnectionError("Elasticsearch Bulut'a bağlanılamadı.")
+except Exception as e:
+    raise ConnectionError(f"Elasticsearch Bulut'a bağlanırken hata oluştu: {e}")
 
 # Word2Vec modelini yükle
-word_model = Word2Vec.load("w2v_custom_from_db.model")
+word_model = Word2Vec.load("w2v_custom.model")
 
 
 # Elasticsearch indeks ayarları
@@ -60,7 +71,7 @@ def create_index():
                 "url": {"type": "keyword"},
                 "word_vector": {
                     "type": "dense_vector",
-                    "dims": 100,
+                    "dims": 100,  # Word2Vec modelinizin vektör boyutuyla eşleşmelidir.
                 },
             }
         },
@@ -84,9 +95,13 @@ def index_articles(batch_size=100):
             tokens = article["text"].split()
             vectors = [word_model.wv[word] for word in tokens if word in word_model.wv]
             if vectors:
-                avg_vector = sum(vectors) / len(vectors)
+                avg_vector = np.mean(
+                    vectors, axis=0
+                )  # NumPy ile ortalama vektör hesapla
             else:
-                avg_vector = [0.0] * 100
+                avg_vector = np.zeros(
+                    100
+                )  # Eğer uygun vektör bulunamazsa sıfır dolu bir NumPy array döndür
 
             action = {
                 "_op_type": "index",
@@ -96,7 +111,7 @@ def index_articles(batch_size=100):
                     "title": article["title"],
                     "text": article["text"],
                     "url": article.get("url", ""),
-                    "word_vector": avg_vector.tolist(),
+                    "word_vector": avg_vector.tolist(),  # NumPy array'i listeye çevirerek ekle
                 },
             }
             actions.append(action)
