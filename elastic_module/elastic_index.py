@@ -2,9 +2,8 @@ import os
 import pymongo
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
+from elasticsearch.helpers import BulkIndexError, bulk
 from gensim.models import Word2Vec
-import numpy as np  # NumPy modülünü ekledik
 
 # Ortam değişkenlerini yükle
 load_dotenv()
@@ -91,17 +90,12 @@ def index_articles(batch_size=100):
         actions = []
 
         for article in cursor:
-            # Word2Vec modelinden vektör oluştur
             tokens = article["text"].split()
             vectors = [word_model.wv[word] for word in tokens if word in word_model.wv]
             if vectors:
-                avg_vector = np.mean(
-                    vectors, axis=0
-                )  # NumPy ile ortalama vektör hesapla
+                avg_vector = sum(vectors) / len(vectors)
             else:
-                avg_vector = np.zeros(
-                    100
-                )  # Eğer uygun vektör bulunamazsa sıfır dolu bir NumPy array döndür
+                avg_vector = [0.0] * 100  # Varsayılan sıfır vektör
 
             action = {
                 "_op_type": "index",
@@ -111,14 +105,19 @@ def index_articles(batch_size=100):
                     "title": article["title"],
                     "text": article["text"],
                     "url": article.get("url", ""),
-                    "word_vector": avg_vector.tolist(),  # NumPy array'i listeye çevirerek ekle
+                    "word_vector": avg_vector,
                 },
             }
             actions.append(action)
 
         if actions:
-            bulk(es, actions)
-            print(f"İndekslendi: {len(actions)} belge - Kaydedildi")
+            try:
+                bulk(es, actions)
+                print(f"İndekslendi: {len(actions)} belge - Kaydedildi")
+            except BulkIndexError as e:
+                print(f"İndekslenemeyen belgeler: {len(e.errors)}")
+                for error in e.errors:
+                    print(f"Hata Detayı: {error}")
 
 
 if __name__ == "__main__":
