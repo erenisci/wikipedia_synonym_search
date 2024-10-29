@@ -1,2 +1,0 @@
-metin = kelime
-selam = merhaba
