@@ -1,0 +1,2 @@
+# Model
+Eğitimli model dosyalarını buraya ekleyebilirsiniz.

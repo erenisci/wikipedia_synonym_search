@@ -1,24 +1,51 @@
 import re
 import xml.etree.ElementTree as ET
+from collections import Counter
+
+from pymongo import InsertOne
+from snowballstemmer import TurkishStemmer
+
+turkStem = TurkishStemmer()
+
+
+def clean_and_stem_title(title):
+    """
+    Başlıkları temizler ve her kelimenin kökünü bulur.
+    """
+    cleaned_title = re.sub(r"[^\wçğıöşüÇĞİÖŞÜ\s]", "", title.lower())
+
+    if not cleaned_title.strip():
+        return [], []
+
+    title_words = cleaned_title.split()
+    stemmed_title = [turkStem.stemWord(word) for word in title_words]
+
+    return title_words, stemmed_title
+
+
+def clean_and_stem_word(word):
+    """
+    Kelimeyi özel karakterlerden arındırır ve kök bulur.
+    """
+    cleaned_word = re.sub(r"[()]", "", word)
+    cleaned_word = re.sub(r"^[^\wçğıöşüÇĞİÖŞÜ]+|[^\wçğıöşüÇĞİÖŞÜ]+$", "", word)
+
+    if not cleaned_word.strip():
+        return ""
+
+    root = turkStem.stemWord(cleaned_word)
+    return root
 
 
 def extract_articles_from_dump(file_path):
+    bulk_operations = []
     with open(file_path, "r", encoding="utf-8") as file:
         context = ET.iterparse(file, events=("end",))
+
         for event, elem in context:
             if elem.tag.endswith("page"):
                 title = elem.find(".//{http://www.mediawiki.org/xml/export-0.11/}title")
                 text = elem.find(".//{http://www.mediawiki.org/xml/export-0.11/}text")
-                revision = elem.find(
-                    ".//{http://www.mediawiki.org/xml/export-0.11/}revision"
-                )
-                timestamp = (
-                    revision.find(
-                        ".//{http://www.mediawiki.org/xml/export-0.11/}timestamp"
-                    )
-                    if revision is not None
-                    else None
-                )
 
                 if title is not None and text is not None:
                     title_text = title.text
@@ -26,7 +53,44 @@ def extract_articles_from_dump(file_path):
                     if title_text and text_content:
                         clean_text = clean_wiki_text(text_content)
 
-                        # URL oluşturma
+                        keywords = []
+                        title_words, stemmed_title = clean_and_stem_title(
+                            title_text.lower()
+                        )
+
+                        if not title_words:
+                            print(f"Boş başlık bulundu, atlanıyor: {title_text}")
+                            continue
+
+                        for title_word, title_root in zip(title_words, stemmed_title):
+                            keywords.append(
+                                {
+                                    "word": title_word,
+                                    "root": title_root,
+                                    "frequency": 1,
+                                    "relevance": 1,
+                                }
+                            )
+
+                        words = re.findall(r"[^\s]+", clean_text.lower())
+                        word_counts = Counter(words)
+
+                        max_frequency = max(word_counts.values(), default=1)
+
+                        for word, count in word_counts.items():
+                            root = clean_and_stem_word(word)
+
+                            relevance = calculate_relevance(count, max_frequency)
+
+                            keywords.append(
+                                {
+                                    "word": word,
+                                    "root": root,
+                                    "frequency": count,
+                                    "relevance": relevance,
+                                }
+                            )
+
                         base_url = "https://tr.wikipedia.org/wiki/"
                         formatted_title = title_text.replace(" ", "_")
                         url = base_url + formatted_title
@@ -35,19 +99,27 @@ def extract_articles_from_dump(file_path):
                             "title": title_text,
                             "text": clean_text,
                             "url": url,
-                            "timestamp": (
-                                timestamp.text if timestamp is not None else None
-                            ),
+                            "keywords": keywords,
                         }
-                        print(f"İşleniyor: Başlık - {title_text}, URL - {url}")
-                        yield article
+
+                        bulk_operations.append(InsertOne(article))
+
+                        if len(bulk_operations) >= 1000:
+                            yield bulk_operations
+                            bulk_operations = []
 
                 elem.clear()
+
+        if bulk_operations:
+            yield bulk_operations
 
 
 def clean_wiki_text(text):
     # Bilgi kutusu ve şablonları temizle: {{...}}
     text = re.sub(r"\{\{(?:[^{}]|\{[^{}]*\})*?\}\}", "", text, flags=re.DOTALL)
+
+    # ''' veya '' gibi kalın ve italik yazım işaretlerini kaldır
+    text = re.sub(r"'{2,}", "", text)
 
     # HTML etiketlerini temizle: <...>
     text = re.sub(r"<.*?>", "", text, flags=re.DOTALL)
@@ -97,4 +169,18 @@ def clean_wiki_text(text):
     # Gereksiz boşlukları temizle
     text = re.sub(r"\s+", " ", text).strip()
 
+    # Kategori başlıklarını kaldır: Kategori:xxx
+    text = re.sub(r"\[\[Kategori:[^\]]+\]\]", "", text)
+
+    # "==Başlık==" ve alt başlıkları kaldır
+    text = re.sub(r"==.*?==", "", text)
+
+    # URL'leri kaldır
+    text = re.sub(r"http[s]?://[^\s]+", "", text)
+
     return text
+
+
+def calculate_relevance(frequency, max_frequency):
+    relevance = min(frequency / max_frequency, 1.0)
+    return relevance

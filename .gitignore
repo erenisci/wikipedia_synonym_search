@@ -1,10 +1,15 @@
+# Model dosyaları
+model/*
+!model/model.txt
+
+# Resources dosyaları
+resources/*
+!resources/resources.txt
+
 # Python dosyaları
 __pycache__/
 *.py[cod]
 *.pyo
-
-# XML Dosyaları
-trwiki-latest-pages-articles.xml
 
 # Ortam değişkenleri dosyaları
 .env

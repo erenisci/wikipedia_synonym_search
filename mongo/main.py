@@ -1,5 +1,6 @@
 import os
-from db.mongo import connect_mongo, save_to_mongodb
+
+from mongo_config import connect_mongo, save_to_mongodb
 
 if __name__ == "__main__":
     client, db = connect_mongo()

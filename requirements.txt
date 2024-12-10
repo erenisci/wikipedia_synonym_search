@@ -1,8 +1,7 @@
-pymongo>=3.11.0
-elasticsearch>=7.10.0
-python-dotenv>=0.15.0
-gensim==4.1.2
-numpy==1.21.4
-nltk>=3.5
-tabulate
-Flask>=2.0.0
+elasticsearch>=8.15.1
+gensim>=4.3.3
+lxml>=5.3.0
+numpy>=1.26.4
+pymongo>=4.10.1
+python-dotenv>=1.0.1
+snowballstemmer>=2.2.0

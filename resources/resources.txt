@@ -1,0 +1,5 @@
+# Resources
+Gerekli veri dosyalarını veya diğer kaynakları buraya ekleyebilirsiniz.
+
+# Kaynak
+https://dumps.wikimedia.org/trwiki/latest/
